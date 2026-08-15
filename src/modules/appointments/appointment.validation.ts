@@ -20,7 +20,8 @@ export const createAppointmentSchema =
         purpose: z
             .string()
             .trim()
-            .min(2, "Purpose is required"),
+            .optional()
+            .default(""),
 
         status: z
             .enum([
@@ -28,6 +29,7 @@ export const createAppointmentSchema =
                 "Completed",
                 "Cancelled",
             ])
+            .optional()
             .default("Scheduled"),
 
         notes: z

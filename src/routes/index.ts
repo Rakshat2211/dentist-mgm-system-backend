@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import authRoutes from "../modules/auth/auth.routes";
 import patientRoutes from "../modules/patients/patient.routes";
+import userRoutes from "../modules/users/user.routes";
 import appointmentRoutes from "../modules/appointments/appointment.routes";
 import billingRoutes from "../modules/billing/billing.routes";
 import backupRoutes from "../modules/backup/backup.routes";
@@ -11,6 +12,7 @@ const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/patients", patientRoutes);
+router.use("/users", userRoutes);
 router.use("/appointments", appointmentRoutes);
 router.use("/billing", billingRoutes);
 router.use("/backup", backupRoutes);

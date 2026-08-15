@@ -15,7 +15,6 @@ class BillingService {
     ) {
         const patient = await Patient.findOne({
             _id: payload.patientId,
-            createdBy: userId,
             isActive: true,
         });
 
@@ -87,7 +86,6 @@ class BillingService {
         if (payload.patientId) {
             const patient = await Patient.findOne({
                 _id: payload.patientId,
-                createdBy: userId,
                 isActive: true,
             });
 
