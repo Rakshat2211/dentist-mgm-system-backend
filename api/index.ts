@@ -6,12 +6,24 @@ import connectDB from "../src/config/db";
 
 let dbReady: Promise<void> | null = null;
 
-if (!dbReady) {
-  dbReady = connectDB();
-}
+const ensureDb = async () => {
+  if (!dbReady) {
+    dbReady = connectDB().catch((error) => {
+      console.error("DB connection check failed:", error);
+      return;
+    });
+  }
+
+  await dbReady;
+};
 
 const handler = async (req: VercelRequest, res: VercelResponse) => {
-  await dbReady;
+  try {
+    await ensureDb();
+  } catch (error) {
+    console.error("Startup DB initialization failed:", error);
+  }
+
   return serverless(app)(req, res);
 };
 
