@@ -86,9 +86,14 @@ export const getDashboard = async () => {
             {
                 $project: {
                     pending: {
-                        $subtract: [
-                            "$amount",
-                            "$paid",
+                        $max: [
+                            {
+                                $subtract: [
+                                    "$amount",
+                                    "$paid",
+                                ],
+                            },
+                            0,
                         ],
                     },
                 },
@@ -103,9 +108,45 @@ export const getDashboard = async () => {
             },
         ]),
 
-        Bill.countDocuments({
-            status: "Paid",
-        }),
+        Bill.aggregate([
+            {
+                $project: {
+                    billStatus: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $gte: [
+                                            "$paid",
+                                            "$amount",
+                                        ],
+                                    },
+                                    then: "Paid",
+                                },
+                                {
+                                    case: {
+                                        $gt: [
+                                            "$paid",
+                                            0,
+                                        ],
+                                    },
+                                    then: "Partial",
+                                },
+                            ],
+                            default: "Pending",
+                        },
+                    },
+                },
+            },
+            {
+                $match: {
+                    billStatus: "Paid",
+                },
+            },
+            {
+                $count: "total",
+            },
+        ]),
 
         Bill.aggregate([
             {
@@ -166,7 +207,8 @@ export const getDashboard = async () => {
                 pendingPaymentsAgg[0]
                     ?.total ?? 0,
 
-            completedBills,
+            completedBills:
+                completedBills[0]?.total ?? 0,
 
             month:
                 monthRevenueAgg[0]?.total ??
